@@ -1,0 +1,23 @@
+Chỉ số,Logistic Regression @ ngưỡng OOF,Random Forest @ ngưỡng chốt
+Ngưỡng,0.8361,0.14
+TP (trên 21 Fail),2.0,8.0
+FN,19.0,13.0
+FP (trên 293 Pass),14.0,26.0
+TN,279.0,267.0
+Accuracy,0.8949,0.8758
+Precision (Fail),0.125,0.2353
+Recall (Fail),0.0952,0.381
+F1 (Fail),0.1081,0.2909
+ROC-AUC,0.7265,0.7487
+Average Precision,0.176,0.2102
+Balanced Accuracy,0.5237,0.6461
+BER,0.4763,0.3539
+FPR,0.0478,0.0887
+FNR,0.9048,0.619
+Tỷ lệ cảnh báo,0.051,0.1083
+Cảnh báo trên 1.000 quan sát,50.9554,108.2803
+Cảnh báo giả trên 1.000 quan sát,44.586,82.8025
+Số lần kiểm tra trung bình trên mỗi Fail chặn được,8.0,4.25
+"Latency median, một quan sát (ms)",0.735,27.8384
+Thời gian train (giây),0.0425,0.2091
+Kích thước file (KB),35.1348,2604.7295

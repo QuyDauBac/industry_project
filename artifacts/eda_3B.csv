@@ -1,0 +1,14 @@
+﻿Nhóm,Vấn đề,Bằng chứng,Ảnh hưởng,Xử lý ở chương 4
+Broken,Giá trị thiếu rải rác,"41951 ô thiếu (4.54%), 538/590 cột có missing",Mô hình không nhận NaN; impute sai gây lệch hoặc rò rỉ,"Impute trung vị, fit trên train"
+Broken,Cột thiếu rất nhiều,8 cột thiếu > 70% (cao nhất 91.19%),"Cột chủ yếu là giá trị điền, ít thông tin thật","Loại cột thiếu > 70%, học trên train"
+Broken,Thiếu theo nhóm cột và theo dòng,22 mức số ô thiếu cho 538 cột; mỗi mẫu thiếu 4-152 ô,Không xoá được dòng; missingness có thể gắn với thời gian,Giữ mọi dòng; missing indicator chỉ thử như ablation
+Bad Quality,Cột hằng và gần hằng,"116 cột hằng, 6 cột gần hằng (> 99% cùng giá trị)",Không có hoặc rất ít thông tin phân biệt,Loại cột hằng (fit trên train); cột gần hằng để bước chọn đặc trưng xử lý
+Bad Quality,Outlier và phân bố lệch,110/464 cột > 5% outlier IQR; 269/474 cột |skew| > 2,Giá trị cực trị kéo lệch mean/std và mô hình tuyến tính,Không xoá outlier; thử RobustScaler hoặc clipping như ablation
+Bad Quality,Thang đo chênh lệch,std từ 1.0e-04 đến 6553.6 (max/min ≈ 6.3e+07),Cột có thang lớn lấn át trong mô hình nhạy thang đo,"StandardScaler, fit trên train"
+Bad Quality,Tương quan cao giữa các cột,"329 cặp |r| > 0.95, 158 cặp |r| > 0.99","Thông tin lặp, hệ số mô hình kém ổn định","Chọn đặc trưng bằng F-test, chọn k bằng CV trong train"
+Bad Quality,Nhiều chiều so với số Fail,590 cột (466 sau lọc) so với 83 Fail ở train,"Dễ overfit, dễ học nhiễu","Chọn đặc trưng bằng F-test, chọn k bằng CV trong train"
+Bad Quality,Mất cân bằng lớp,Fail 104/1567 (6.64%),Accuracy cao giả tạo; Recall của Fail thấp,class_weight và chọn ngưỡng; SMOTE như ablation
+Background,Thiếu ngữ cảnh cảm biến,"Cột chỉ có chỉ số 0-589; không có tên, đơn vị, công đoạn",Không diễn giải được ý nghĩa vật lý,Không gán ý nghĩa vật lý; chỉ báo cáo theo chỉ số cột
+Background,"Thiếu định nghĩa Fail, thời điểm gán nhãn, chi phí","Chỉ có nhãn -1/1; không có chi phí bỏ sót, báo nhầm, downtime",Không chọn ngưỡng theo chi phí; chưa chắc phép đo có sẵn lúc dự đoán,Không giả định chi phí; chọn ngưỡng chỉ trên train
+Background,Timestamp là bối cảnh duy nhất,Tỉ lệ Fail theo tuần 1.06%-23.08%,"Random split trộn thời điểm, kết quả test có thể lạc quan",Không dùng timestamp làm feature; ghi hạn chế ở chương 7
+Background,Metadata lệch với file,"UCI ghi 591 features, file thực tế 590 trường mỗi dòng",Dễ đọc sai nếu chỉ tin metadata,Dùng đúng 590 cột của file

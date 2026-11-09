@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+
+# Môi trường ảo
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / hệ điều hành
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Dữ liệu SECOM (người dùng tự đặt vào)
+data/secom/*.data
+
+# Artifact (giữ .gitkeep)
+artifacts/*.joblib
+!artifacts/.gitkeep

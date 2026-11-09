@@ -1,0 +1,15 @@
+Mức,Chỉ số,Giá trị,Ghi chú
+System,FPR,0.08873720136518772,26/293 Pass bị cảnh báo nhầm
+System,FNR,0.6190476190476191,13/21 Fail bị bỏ sót
+System,Tỷ lệ cảnh báo,0.10828025477707007,34/314 quan sát bị gắn cờ
+System,Cảnh báo trên 1.000 quan sát,108.28025477707007,ngoại suy theo tỷ lệ test
+System,Cảnh báo giả trên 1.000 quan sát,82.80254777070063,ngoại suy theo tỷ lệ test
+System,"Latency median, một quan sát (ms)",27.838400041218847,"100 lần, toàn pipeline từ 590 cột thô; không tính nạp joblib"
+System,Latency batch (ms/quan sát),0.0900280254798093,dự đoán cả test một lần
+System,"Latency median, một quan sát, n_jobs=1 (ms)",5.5060500162653625,"bản sao model, chỉ đổi cách suy luận, điểm số không đổi"
+System,Thời gian train model cuối (giây),0.20913630002178252,"một lần refit trên train, đọc từ decision_config.json"
+System,Kích thước model cuối (KB),2604.7294921875,model_final.joblib
+Industrial,Fail có thể được chặn (TP),8.0,"8/21 Fail, nếu mọi cảnh báo được kiểm tra và xác nhận đúng; quy đổi 25.5 trên 1.000 quan sát"
+Industrial,Fail lọt (FN),13.0,13/21 Fail; quy đổi 41.4 trên 1.000 quan sát
+Industrial,Pass cần kiểm tra thêm (FP),26.0,26/293 Pass; quy đổi 82.8 trên 1.000 quan sát
+Industrial,Tải kiểm tra (TP + FP),34.0,34/314 quan sát; quy đổi 108.3 trên 1.000 quan sát
