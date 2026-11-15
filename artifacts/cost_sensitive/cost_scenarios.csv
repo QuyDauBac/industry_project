@@ -1,0 +1,7 @@
+﻿name,fp_cost,fn_cost,tp_cost,tn_cost,family,cost_ratio_fn_to_fp,cost_unit,assumed_not_company_data
+review_r5,1.0,5.0,1.0,0.0,review_all_alerts,5.0,relative_unit_not_currency,True
+review_r10,1.0,10.0,1.0,0.0,review_all_alerts,10.0,relative_unit_not_currency,True
+review_r20,1.0,20.0,1.0,0.0,review_all_alerts,20.0,relative_unit_not_currency,True
+emc_r5,1.0,5.0,0.0,0.0,misclassification,5.0,relative_unit_not_currency,True
+emc_r10,1.0,10.0,0.0,0.0,misclassification,10.0,relative_unit_not_currency,True
+emc_r20,1.0,20.0,0.0,0.0,misclassification,20.0,relative_unit_not_currency,True

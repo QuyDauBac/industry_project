@@ -5,7 +5,15 @@ Dataset SECOM: 1567 mẫu, 590 đặc trưng, nhãn Pass/Fail, có timestamp. B�
 
 Mỗi notebook ứng với một giai đoạn của lifecycle 8 bước (Problem Definition → Data Understanding → Data Preparation → Method Selection → Model Development → Evaluation → Deployment → Monitoring and Improvement). Notebook sau nạp lại kết quả notebook trước đã lưu trong `artifacts/`, không import notebook khác.
 
-> Trạng thái: bộ khung. Các notebook và `secom_utils.py` mới có tiêu đề mục và `# TODO`.
+## Quyết định và kết quả mới nhất — 15/11/2026
+
+- **Dành cho người viết báo cáo:** [Hướng đi và kết quả chốt theo EMC](report/ket_luan_chi_phi_emc_r10.md).
+- Quy trình: dự đoán Fail thì loại ngay; chi phí giả định **TN = TP = 0, FP = 1, FN = 10**; tối ưu `(FP + 10 × FN) / N`.
+- [Notebook 03b](03b_cost_sensitive_modeling.ipynb), mục **10.1**, trình bày cách tìm ngưỡng bằng vòng lặp và OOF thật. Policy cuối là RF, ngưỡng **0,344288**; điểm đánh giá quy trình bằng nested CV là **0,555467**, khác điểm OOF dùng để lựa chọn.
+- [Quy ước đã chốt](QUY_UOC_CHI_PHI_DA_CHOT.md) và [hướng dẫn chạy/đọc 03b](HUONG_DAN_03B_COST_SENSITIVE.md).
+- [03c](03c_xgb_l1_rf_five_seeds.ipynb) giữ kết quả thử nghiệm trước. Thử nghiệm ba mô hình với tiêu chí EMC mới và nested CV **chưa chạy**.
+
+Các nội dung cấu trúc và lifecycle bên dưới mô tả tổ chức chung của đồ án.
 
 ## Cấu trúc thư mục
 
