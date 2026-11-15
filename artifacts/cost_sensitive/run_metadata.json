@@ -1,0 +1,290 @@
+{
+  "created_at_utc": "2026-11-15T15:48:37.758613+00:00",
+  "experiment": "cost_sensitive_classification_assumed_costs",
+  "seed": 42,
+  "outer_splits": 5,
+  "inner_splits": 3,
+  "final_selection_splits": 5,
+  "n_train": 1253,
+  "n_train_fail": 83,
+  "n_features_raw": 590,
+  "n_holdout_excluded": 314,
+  "holdout_evaluated": false,
+  "timestamp_used_as_feature": false,
+  "costs_are_assumptions": true,
+  "cost_unit": "relative_unit_not_currency",
+  "company_costs_available": false,
+  "primary_scenario": "emc_r10",
+  "decision_assumption": "Predicted Fail is rejected directly; no reinspection.",
+  "review_assumption": "Only review_r scenarios assume reinspection of every predicted Fail.",
+  "miss_cost_assumption": "Expected remaining cost of a missed Fail at this decision step.",
+  "minimum_recall_constraint": null,
+  "baseline_results_status": "Previously measured results, not hypothetical values.",
+  "nested_runtime_seconds": 115.21918089999963,
+  "final_selection_runtime_seconds": 47.03570050000053,
+  "python_version": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "package_versions": {
+    "numpy": "2.4.6",
+    "pandas": "3.1.0",
+    "scipy": "1.17.1",
+    "scikit-learn": "1.9.1",
+    "matplotlib": "3.11.1",
+    "joblib": "1.6.0"
+  },
+  "candidate_grid": [
+    {
+      "candidate_id": "lr_k20_c0p1",
+      "family": "LR",
+      "params": {
+        "k": 20,
+        "C": 0.1
+      }
+    },
+    {
+      "candidate_id": "lr_k20_c1",
+      "family": "LR",
+      "params": {
+        "k": 20,
+        "C": 1.0
+      }
+    },
+    {
+      "candidate_id": "lr_k20_c10",
+      "family": "LR",
+      "params": {
+        "k": 20,
+        "C": 10.0
+      }
+    },
+    {
+      "candidate_id": "rf_k20_d5_leaf1",
+      "family": "RF",
+      "params": {
+        "k": 20,
+        "max_depth": 5,
+        "min_samples_leaf": 1,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k20_d5_leaf5",
+      "family": "RF",
+      "params": {
+        "k": 20,
+        "max_depth": 5,
+        "min_samples_leaf": 5,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k20_dNone_leaf1",
+      "family": "RF",
+      "params": {
+        "k": 20,
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k20_dNone_leaf5",
+      "family": "RF",
+      "params": {
+        "k": 20,
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "lr_k40_c0p1",
+      "family": "LR",
+      "params": {
+        "k": 40,
+        "C": 0.1
+      }
+    },
+    {
+      "candidate_id": "lr_k40_c1",
+      "family": "LR",
+      "params": {
+        "k": 40,
+        "C": 1.0
+      }
+    },
+    {
+      "candidate_id": "lr_k40_c10",
+      "family": "LR",
+      "params": {
+        "k": 40,
+        "C": 10.0
+      }
+    },
+    {
+      "candidate_id": "rf_k40_d5_leaf1",
+      "family": "RF",
+      "params": {
+        "k": 40,
+        "max_depth": 5,
+        "min_samples_leaf": 1,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k40_d5_leaf5",
+      "family": "RF",
+      "params": {
+        "k": 40,
+        "max_depth": 5,
+        "min_samples_leaf": 5,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k40_dNone_leaf1",
+      "family": "RF",
+      "params": {
+        "k": 40,
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k40_dNone_leaf5",
+      "family": "RF",
+      "params": {
+        "k": 40,
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "lr_k80_c0p1",
+      "family": "LR",
+      "params": {
+        "k": 80,
+        "C": 0.1
+      }
+    },
+    {
+      "candidate_id": "lr_k80_c1",
+      "family": "LR",
+      "params": {
+        "k": 80,
+        "C": 1.0
+      }
+    },
+    {
+      "candidate_id": "lr_k80_c10",
+      "family": "LR",
+      "params": {
+        "k": 80,
+        "C": 10.0
+      }
+    },
+    {
+      "candidate_id": "rf_k80_d5_leaf1",
+      "family": "RF",
+      "params": {
+        "k": 80,
+        "max_depth": 5,
+        "min_samples_leaf": 1,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k80_d5_leaf5",
+      "family": "RF",
+      "params": {
+        "k": 80,
+        "max_depth": 5,
+        "min_samples_leaf": 5,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k80_dNone_leaf1",
+      "family": "RF",
+      "params": {
+        "k": 80,
+        "max_depth": null,
+        "min_samples_leaf": 1,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    },
+    {
+      "candidate_id": "rf_k80_dNone_leaf5",
+      "family": "RF",
+      "params": {
+        "k": 80,
+        "max_depth": null,
+        "min_samples_leaf": 5,
+        "n_estimators": 200,
+        "n_jobs": 1
+      }
+    }
+  ],
+  "cost_scenarios": [
+    {
+      "name": "review_r5",
+      "fp_cost": 1.0,
+      "fn_cost": 5.0,
+      "tp_cost": 1.0,
+      "tn_cost": 0.0,
+      "family": "review_all_alerts"
+    },
+    {
+      "name": "review_r10",
+      "fp_cost": 1.0,
+      "fn_cost": 10.0,
+      "tp_cost": 1.0,
+      "tn_cost": 0.0,
+      "family": "review_all_alerts"
+    },
+    {
+      "name": "review_r20",
+      "fp_cost": 1.0,
+      "fn_cost": 20.0,
+      "tp_cost": 1.0,
+      "tn_cost": 0.0,
+      "family": "review_all_alerts"
+    },
+    {
+      "name": "emc_r5",
+      "fp_cost": 1.0,
+      "fn_cost": 5.0,
+      "tp_cost": 0.0,
+      "tn_cost": 0.0,
+      "family": "misclassification"
+    },
+    {
+      "name": "emc_r10",
+      "fp_cost": 1.0,
+      "fn_cost": 10.0,
+      "tp_cost": 0.0,
+      "tn_cost": 0.0,
+      "family": "misclassification"
+    },
+    {
+      "name": "emc_r20",
+      "fp_cost": 1.0,
+      "fn_cost": 20.0,
+      "tp_cost": 0.0,
+      "tn_cost": 0.0,
+      "family": "misclassification"
+    }
+  ]
+}

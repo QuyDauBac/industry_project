@@ -2,25 +2,27 @@
 
 Tài liệu cho thành viên nhóm đọc và chạy [03b_cost_sensitive_modeling.ipynb](./03b_cost_sensitive_modeling.ipynb). Phần xử lý và huấn luyện nằm trong [secom_cost_sensitive.py](./secom_cost_sensitive.py); cách đọc dữ liệu và tính các chỉ số dùng lại từ [secom_utils.py](./secom_utils.py).
 
+**Cập nhật 15/11/2026:** quy trình đã chốt là loại/tiêu hủy ngay mẫu dự đoán Fail, không kiểm tra lại. Dùng **`emc_r10`**, với TP = TN = 0, FP = 1, FN = 10. Xem [kết luận và số liệu để viết báo cáo](report/ket_luan_chi_phi_emc_r10.md). Các kịch bản `review_*` vẫn được giữ để đối chiếu giả định cũ.
+
 ## Đọc trong 2 phút
 
 - Bài toán là **phân loại sản phẩm Pass/Fail** từ 590 phép đo. Timestamp không phải đầu vào mô hình.
 - **Kết quả modeling cũ là số đo thực nghiệm**, giữ làm baseline. Chỉ **chi phí kinh doanh** trong thử nghiệm mới là giả định.
 - Notebook thử 21 cấu hình LR/RF và 6 kịch bản chi phí. Với mỗi kịch bản, nó chọn cấu hình và ngưỡng sao cho chi phí thấp nhất trên dữ liệu dùng để chọn.
 - **CV vòng trong dùng để chọn; CV vòng ngoài dùng để đánh giá.** Tập test 314 mẫu không được dùng để chọn hoặc chấm điểm mới.
-- `r = 20` nghĩa là **bỏ sót một sản phẩm lỗi được giả định tốn gấp 20 lần kiểm tra một sản phẩm**. Nó không có nghĩa là bỏ sót 20 sản phẩm hay bỏ sót 20%.
+- Trong họ EMC, `r = 10` nghĩa là **bỏ sót một sản phẩm lỗi được giả định gây thiệt hại gấp 10 lần loại nhầm một sản phẩm tốt**. Nó không có nghĩa bỏ sót 10 sản phẩm hoặc 10%.
 - Để đánh giá chất lượng, đọc `nested_summary.csv` sau khi chạy. `final_policies.csv` là kết quả chọn cấu hình cuối, có thể lạc quan vì đã được tối ưu trên chính OOF đó.
 
 Nếu chỉ cần hiểu ý nghĩa kết quả, đọc mục **5, 8 và 10**. Nếu cần chạy lại, bắt đầu từ mục **1–2**.
 
 ## 1. Lấy đúng phiên bản từ GitHub
 
-Các file mới đang nằm trên fork `Ductri2006/industry_project`, nhánh `cost-sensitive-modeling`, trong [PR nháp #1](https://github.com/QuyDauBac/industry_project/pull/1) gửi vào repo gốc.
+Bản gốc 03b đã được merge qua PR #1. Bản cập nhật công thức đã chốt, cách tìm ngưỡng basic, tài liệu và notebook 03c nằm trên fork `Ductri2006/industry_project`, nhánh `three-model-five-seeds`, trong [PR #2](https://github.com/QuyDauBac/industry_project/pull/2) gửi vào repo gốc.
 
 **Pull nhánh `main` của repo gốc chỉ có các file này sau khi PR được merge.** Nếu muốn xem trước bằng một bản sao mới:
 
 ```powershell
-git clone --branch cost-sensitive-modeling https://github.com/Ductri2006/industry_project.git industry_project_cost_sensitive
+git clone --branch three-model-five-seeds https://github.com/Ductri2006/industry_project.git industry_project_cost_sensitive
 cd industry_project_cost_sensitive
 ```
 
@@ -123,10 +125,10 @@ Tổng cộng **21 cấu hình**. C nhỏ hơn tăng mức regularization của 
 
 | Thực tế | Dự đoán Pass | Dự đoán Fail |
 |---|---|---|
-| Pass | **TN:** sản phẩm tốt được nhận đúng | **FP:** sản phẩm tốt bị gán lỗi, phải kiểm tra nhầm |
+| Pass | **TN:** sản phẩm tốt được nhận đúng | **FP:** sản phẩm tốt bị gán lỗi, bị loại nhầm |
 | Fail | **FN:** sản phẩm lỗi bị bỏ sót | **TP:** sản phẩm lỗi được phát hiện đúng |
 
-N = TP + FP + FN + TN. Nếu mọi nhãn Fail đều dẫn đến kiểm tra lại, số sản phẩm cần kiểm tra là **TP + FP**, không chỉ FP.
+N = TP + FP + FN + TN. Theo quy trình mới, số sản phẩm bị loại là **TP + FP**. Chỉ FP là sản phẩm tốt bị loại nhầm; TP là loại đúng sản phẩm vốn đã lỗi.
 
 Công thức chi phí trung bình tổng quát:
 
@@ -143,13 +145,13 @@ Notebook phân tích hai họ chi phí riêng:
 | FN | r | r |
 | TP | 0 | 1 |
 
-EMC thông thường coi dự đoán đúng không tốn chi phí:
+**Họ EMC là hướng chính đã chốt**, coi dự đoán đúng không phát sinh thiệt hại do phân loại sai:
 
 $$
 EMC=\frac{FP+rFN}{N}.
 $$
 
-Họ `review_*` là **kịch bản chính** của bài toán nhóm đang trao đổi: cả cảnh báo đúng và nhầm đều phải kiểm tra lại:
+Họ `review_*` là kịch bản quy trình cũ để đối chiếu: cả cảnh báo đúng và nhầm đều phải kiểm tra lại:
 
 $$
 EC_{review}=\frac{TP+FP+rFN}{N}.
@@ -163,7 +165,7 @@ $$
 
 Ví dụ riêng họ review: nếu một lần kiểm tra là 10.000 đồng, r = 20 tương ứng giả định mỗi lần bỏ sót gây tổn thất kỳ vọng 200.000 đồng. Ví dụ này không phải số liệu công ty. **r = 20 không có nghĩa bỏ sót 20 sản phẩm, hay càng đắt thì bỏ sót càng nhiều.**
 
-Giả định hiện tại: kiểm tra lại phát hiện được lỗi; chi phí FN là tổn thất kỳ vọng còn lại khi bỏ sót tại bước này, có xét các bước QC tiếp theo. FN không tự động có nghĩa sản phẩm lỗi đã được giao cho khách hàng. Chưa đặt ràng buộc Recall tối thiểu hoặc năng lực kiểm tra tối đa vì chưa có yêu cầu định lượng từ doanh nghiệp.
+Giả định hiện tại: dự đoán Fail bị loại ngay, không kiểm tra lại. Chi phí FP là thiệt hại do tiêu hủy nhầm sản phẩm tốt; chi phí FN là tổn thất kỳ vọng khi sản phẩm lỗi bị cho qua tại bước này. Chưa có số liệu chi phí thực tế, ràng buộc Recall tối thiểu hoặc giới hạn loại nhầm do doanh nghiệp cung cấp.
 
 ## 6. Chọn ngưỡng như thế nào?
 
@@ -175,7 +177,9 @@ $$
 
 Điểm OOF của phần train dùng để chọn được quét qua các giá trị score phân biệt, thêm ngưỡng 0 và một ngưỡng cố định lớn hơn 1 cho phương án luôn Pass. Ngưỡng lớn hơn 1 là **quy ước cho hành động không gắn Fail**, không phải xác suất lớn hơn 100%.
 
-Trong mỗi kịch bản, ưu tiên theo thứ tự: **chi phí thấp nhất → ít sản phẩm kiểm tra nhất → ngưỡng cao hơn → candidate ID** nếu vẫn hòa. Quy tắc cuối chỉ giúp kết quả xác định khi các lựa chọn tương đương.
+Mục **10.1 trong notebook** trình bày trực tiếp cách viết basic: vòng lặp `for` thử từng ngưỡng, dự đoán nhãn, đếm FP/FN, tính `(FP + 10 * FN) / N`, lưu thành bảng và sắp xếp chi phí tăng dần để lấy dòng đầu. Dữ liệu minh họa là OOF thật của cấu hình cuối; điểm này dùng để chọn, không thay cho đánh giá nested CV.
+
+Trong mỗi kịch bản, ưu tiên theo thứ tự: **chi phí thấp nhất → ít sản phẩm dự đoán Fail nhất → ngưỡng cao hơn → candidate ID** nếu vẫn hòa. Quy tắc cuối chỉ giúp kết quả xác định khi các lựa chọn tương đương.
 
 Đổi ngưỡng thay đổi TP/FP/FN/TN, không tự làm khả năng xếp hạng tốt hơn. Score từ mô hình dùng class weight chưa được xác nhận là xác suất đã hiệu chỉnh; không hiểu score 0,2 chắc chắn là “20% khả năng lỗi”, cũng không áp thẳng công thức ngưỡng lý thuyết theo tỷ lệ chi phí. Notebook chọn ngưỡng thực nghiệm bằng CV.
 
@@ -225,11 +229,11 @@ Trong bài này, lớp dương là **Fail = 1**. Dấu ↑ nghĩa là cao hơn t
 | Balanced Accuracy ↑ | $(Recall+TN/(TN+FP))/2$ | Trung bình tỷ lệ nhận đúng của hai lớp. |
 | BER ↓ | $(FNR+FPR)/2$ | Bằng 1 − Balanced Accuracy. |
 | Accuracy ↑ | $(TP+TN)/N$ | Tỷ lệ đúng tổng thể; dễ cao do Pass chiếm đa số. |
-| Inspection/alarm rate | $(TP+FP)/N$ | Tỷ lệ sản phẩm được gắn Fail, phải kiểm tra trong họ review. |
+| Alarm/predicted-Fail rate | $(TP+FP)/N$ | Tỷ lệ sản phẩm bị loại trong họ EMC hiện tại; kiểm tra trong họ review cũ. |
 
 Trong code, Precision/F1 được ghi là 0 khi mẫu số bằng 0. AP và ROC-AUC mô tả khả năng xếp hạng qua nhiều ngưỡng; chúng là thông tin bổ sung, không phải mục tiêu lựa chọn chính của notebook chi phí.
 
-**Không tối ưu riêng Recall hoặc Precision:** luôn gán Fail cho Recall = 100% nhưng kiểm tra mọi sản phẩm; luôn gán Pass tránh mọi FP nhưng bỏ sót mọi Fail. Cần nhìn cả chi phí và số đếm.
+**Không tối ưu riêng Recall hoặc Precision:** luôn gán Fail cho Recall = 100% nhưng loại mọi sản phẩm; luôn gán Pass tránh mọi FP nhưng bỏ sót mọi Fail. Cần nhìn cả chi phí và số đếm.
 
 ## 9. Đọc đúng bảng kết quả và tệp được lưu
 
@@ -248,11 +252,17 @@ Sau khi chạy, các tệp sinh lại nằm trong `artifacts/cost_sensitive/`:
 
 Hai đồ thị sinh vào `figures/cost_sensitive/`: chi phí theo tỷ lệ r và Recall theo tỷ lệ kiểm tra. Chỉ so chi phí LR/RF/baseline **trong cùng kịch bản**. Chi phí thô khác r hoặc khác ma trận không cùng bài toán tối ưu, nên không dùng để kết luận r nào “tốt nhất”.
 
-Các CSV/model/PNG mới này được sinh khi chạy, không được đẩy kèm commit notebook ban đầu. Pull về vẫn xem được output nhúng trong notebook; cần chạy lại để có các tệp riêng trên máy. Không dùng thêm preprocessing bên ngoài pipeline khi dự đoán; phải giữ đúng thứ tự 590 cột và ngưỡng của policy.
+Bản cập nhật này đính kèm các bảng summary, fold metrics, final policies, ma trận chi phí, candidate grid, metadata và hai PNG để nhóm viết báo cáo. Các model nhị phân và bảng dự đoán/tìm kiếm chi tiết khác được tạo khi chạy lại. Không dùng thêm preprocessing bên ngoài pipeline khi dự đoán; phải giữ đúng thứ tự 590 cột và ngưỡng của policy. Các cột legacy `n_inspections`/`inspection_rate` vẫn lưu số/tỷ lệ dự đoán Fail, tương ứng sản phẩm bị loại trong quy trình EMC hiện tại.
 
 ## 10. Kết quả lần chạy hiện tại và cách diễn giải
 
-Bảng sau lấy từ `nested_summary.csv`, scope **`cost_selected`**, họ chi phí **review**. N = 1.253, gồm 83 Fail và 1.170 Pass. Đây là số đo CV, không phải kết quả trên tập test 314 mẫu.
+**Kết quả chính đã chốt:** `emc_r10`, scope `cost_selected`, có TP = 38, FP = 246, FN = 45, TN = 924 trên dự đoán vòng ngoài. EMC = `(246 + 10 × 45) / 1253` = **0,555467**. Đây là số đo để báo cáo hiệu quả quy trình lựa chọn.
+
+Policy cuối chọn bằng OOF toàn train: RF `rf_k80_dNone_leaf5`, ngưỡng **0,344288**, EMC lựa chọn **0,496409**. Điểm lựa chọn không thay cho điểm nested CV. Xem [bảng số liệu và đoạn kết luận cho báo cáo](report/ket_luan_chi_phi_emc_r10.md).
+
+### Đối chiếu quy trình cũ: họ review
+
+Bảng sau lấy từ `nested_summary.csv`, scope **`cost_selected`**, họ chi phí **review**, để giữ đối chiếu với giả định kiểm tra lại trước đây. N = 1.253, gồm 83 Fail và 1.170 Pass. Đây là số đo CV, không phải kết quả trên tập test 314 mẫu hoặc công thức EMC chính hiện tại.
 
 | Kịch bản | TP | FP | FN | TN | Kiểm tra TP+FP | Tổng chi phí | Chi phí/1.000 sản phẩm |
 |---|---:|---:|---:|---:|---:|---:|---:|
@@ -289,7 +299,7 @@ Hai mốc tham chiếu trong họ review: **luôn Pass có tổng chi phí = 83r
 1. **Chỉ chi phí là giả định.** Nhãn, dữ liệu và các số đo chạy mô hình không được gọi là số giả lập.
 2. Chỉ số chính của thử nghiệm mới là chi phí theo từng ma trận; vẫn báo Precision, Recall, BER và TP/FP/FN/TN để người đọc thấy đánh đổi.
 3. Không lấy kết quả test cũ so với nested CV mới rồi gọi phần chênh là mức cải thiện chắc chắn: chúng có cách chọn và tập đánh giá khác nhau.
-4. Chưa có chi phí thật, giới hạn kiểm tra hoặc Recall tối thiểu, nên chưa có một policy doanh nghiệp duy nhất. Chi phí thấp không tự chứng minh mức bỏ sót là chấp nhận được.
+4. Đã chốt policy cho đồ án theo `emc_r10`; chưa có chi phí thật, giới hạn loại nhầm hoặc Recall tối thiểu. Chi phí thấp không tự chứng minh mức bỏ sót là chấp nhận được trong triển khai doanh nghiệp.
 5. Dữ liệu có ít Fail; dao động giữa fold và lựa chọn ngưỡng còn đáng kể. Những kết quả này hỗ trợ đánh giá prototype, chưa đủ xác nhận triển khai nhà máy.
 6. Thay đổi r, lưới tham số hoặc ràng buộc là một thí nghiệm mới. Giữ lại metadata; xác nhận bằng dữ liệu mới trước khi kết luận vận hành.
 

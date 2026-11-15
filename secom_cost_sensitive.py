@@ -151,7 +151,7 @@ def _metrics(y: np.ndarray, scores: np.ndarray, threshold: float, scenario: Cost
 def select_cost_threshold(y: Any, scores: Any, scenario: CostScenario) -> dict[str, Any]:
     """Minimize empirical cost on selection data, including the always-Pass action.
 
-    Predictions use score >= threshold. Ties prefer fewer inspections, then a
+    Predictions use score >= threshold. Ties prefer fewer predicted Fail, then a
     higher threshold. Scores must lie in [0, 1] but need not be calibrated.
     Returned metrics are selection statistics, not an unbiased evaluation.
     """
@@ -162,23 +162,36 @@ def select_cost_threshold(y: Any, scores: Any, scenario: CostScenario) -> dict[s
             or (values < 0).any() or (values > 1).any()):
         raise ValueError("Aligned scores in [0, 1] and binary labels are required")
     labels = labels.astype(int)
-    order = np.argsort(values, kind="stable")
-    sorted_scores, sorted_y = values[order], labels[order]
-    # A constant always-Pass policy must remain constant on refitted models too,
-    # even if their scores exceed the maximum observed during inner selection.
-    thresholds = np.unique(np.r_[0.0, sorted_scores, np.nextafter(1.0, np.inf)])
-    below = np.searchsorted(sorted_scores, thresholds, side="left")
-    positives_below = np.r_[0, np.cumsum(sorted_y)][below]
-    fn = positives_below
-    tn = below - fn
-    tp = int(labels.sum()) - fn
-    fp = len(labels) - int(labels.sum()) - tn
-    costs = (scenario.tp_cost * tp + scenario.fp_cost * fp
-             + scenario.fn_cost * fn + scenario.tn_cost * tn)
-    inspections = tp + fp
-    # lexsort uses the last key as primary: cost, inspections, higher threshold.
-    best = int(np.lexsort((-thresholds, inspections, costs))[0])
-    return _metrics(labels, values, float(thresholds[best]), scenario)
+
+    # 1. Try every score cut-off, plus always-Fail (0) and always-Pass (> 1).
+    thresholds = np.unique(np.r_[0.0, values, np.nextafter(1.0, np.inf)])
+    rows = []
+
+    # 2. Predict labels and count the four outcomes at each threshold.
+    for threshold in thresholds:
+        predicted = (values >= threshold).astype(int)
+        tn = int(np.sum((labels == 0) & (predicted == 0)))
+        fp = int(np.sum((labels == 0) & (predicted == 1)))
+        fn = int(np.sum((labels == 1) & (predicted == 0)))
+        tp = int(np.sum((labels == 1) & (predicted == 1)))
+
+        # For emc_r10, this becomes total_cost = fp + 10 * fn.
+        total_cost = (scenario.tn_cost * tn + scenario.fp_cost * fp
+                      + scenario.fn_cost * fn + scenario.tp_cost * tp)
+        rows.append({
+            "threshold": threshold,
+            "total_cost": total_cost,
+            "n_predicted_fail": tp + fp,
+        })
+
+    # 3. Lowest cost wins. Ties: fewer predicted Fail, then higher threshold.
+    table = pd.DataFrame(rows)
+    table = table.sort_values(
+        ["total_cost", "n_predicted_fail", "threshold"],
+        ascending=[True, True, False],
+    )
+    best_threshold = float(table.iloc[0]["threshold"])
+    return _metrics(labels, values, best_threshold, scenario)
 
 
 def _selection_search(
